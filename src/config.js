@@ -1,6 +1,6 @@
 const config = {
-  USERNAME: 'test',
-  PASSWORD: 'test',
+  USERNAME: process.env.USERNAME || 'test',
+  PASSWORD: process.env.PASSWORD || 'test',
   PORT: Number(process.env.PORT) || 4000,
   PHOTO_INTERVAL_MS: Number(process.env.PHOTO_INTERVAL_MS) || 10000,
   MAX_PHOTOS_TO_KEEP: Number(process.env.MAX_PHOTOS_TO_KEEP) || 360,
