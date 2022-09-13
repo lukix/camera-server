@@ -8,6 +8,8 @@ const config = require('./config');
 
 const app = express();
 
+app.disable('x-powered-by');
+
 app.use(getAuthMiddleware({
   username: config.USERNAME,
   password: config.PASSWORD,
