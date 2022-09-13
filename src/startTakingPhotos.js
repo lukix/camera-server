@@ -53,7 +53,6 @@ const cleanUpOldPhotos = async ({ maxPhotosToKeep, photosDirPath, removeFileComm
       );
     } catch (error) {
       console.error('Could not remove old photos');
-      throw error;
     }
 
 }
