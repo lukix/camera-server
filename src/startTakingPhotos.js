@@ -25,7 +25,8 @@ const takeAPhoto = async ({ photoCommand, photosDirPath }) => {
   const [dateString] = new Date().toISOString()
     .replace('T', '_')
     .replace(/\:/g, '-')
-    .split('.');
+    .replace('.', '_')
+    .replace('Z', '');
   const photoFileName = `${dateString}.jpg`;
   const photoFilePath = path.join(photosDirPath, photoFileName);
   const photoCommandWithReplacedName = photoCommand.replace('FILEPATH', photoFilePath);
@@ -51,7 +52,7 @@ const cleanUpOldPhotos = async ({ maxPhotosToKeep, photosDirPath, removeFileComm
         oldImagePaths.map(imagePath => removeFile(imagePath))
       );
     } catch (error) {
-      console.error('Could remove old photos');
+      console.error('Could not remove old photos');
       throw error;
     }
 
