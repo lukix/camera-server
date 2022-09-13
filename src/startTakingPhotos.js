@@ -63,6 +63,7 @@ const startTakingPhotos = ({ interval, maxPhotosToKeep, photoCommand, photosDirP
     await cleanUpOldPhotos({ maxPhotosToKeep, photosDirPath, removeFileCommand });
     setTimeout(loop, interval);
   };
+  loop();
 }
 
 module.exports = startTakingPhotos;
