@@ -5,6 +5,7 @@ const config = {
   PHOTO_INTERVAL_MS: Number(process.env.PHOTO_INTERVAL_MS) || 10000,
   MAX_PHOTOS_TO_KEEP: Number(process.env.MAX_PHOTOS_TO_KEEP) || 360,
   PHOTO_COMMAND: process.env.PHOTO_COMMAND || null,
+  REMOVE_FILE_COMMAND: process.env.REMOVE_FILE_COMMAND || null,
   PHOTOS_DIR_PATH: process.env.PHOTOS_DIR_PATH,
 }
 

@@ -31,6 +31,7 @@ if (config.PHOTO_COMMAND) {
     interval: config.PHOTO_INTERVAL_MS,
     maxPhotosToKeep: config.MAX_PHOTOS_TO_KEEP,
     photoCommand: config.PHOTO_COMMAND,
+    removeFileCommand: config.REMOVE_FILE_COMMAND,
     photosDirPath: config.PHOTOS_DIR_PATH,
   });
 } else {

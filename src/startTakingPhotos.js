@@ -5,7 +5,21 @@ const fs = require('fs');
 
 const getImagePathsNewestToOldest = require('./getImagePathsNewestToOldest');
 
-const removeFile = promisify(fs.unlink);
+const defaultRemoveFile = promisify(fs.unlink);
+
+const executeCommand = (command) => new Promise((res, rej) => {
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.log(`error: ${error.message}`);
+      rej({ error });
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      rej({ stderr });
+    }
+    res(stdout);
+  });
+});
 
 const takeAPhoto = async ({ photoCommand, photosDirPath }) => {
   const [dateString] = new Date().toISOString()
@@ -16,33 +30,37 @@ const takeAPhoto = async ({ photoCommand, photosDirPath }) => {
   const photoFilePath = path.join(photosDirPath, photoFileName);
   const photoCommandWithReplacedName = photoCommand.replace('FILEPATH', photoFilePath);
 
-  return await new Promise((res) => {
-    exec(photoCommandWithReplacedName, (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-      }
-      res();
-    });
-  });
+  try {
+    await executeCommand(photoCommandWithReplacedName);
+  } catch (error) {
+    console.error('Could not take a photo');
+  }
 };
-const cleanUpOldPhotos = async ({ maxPhotosToKeep, photosDirPath }) => {
+const cleanUpOldPhotos = async ({ maxPhotosToKeep, photosDirPath, removeFileCommand }) => {
   const imageNames = await getImagePathsNewestToOldest({ imagesDirName: photosDirPath });
   const oldImagePaths = imageNames
     .slice(maxPhotosToKeep)
     .map(fileName => path.join(photosDirPath, fileName));
 
-  await Promise.all(
-    oldImagePaths.map(imagePath => removeFile(imagePath))
-  );
+  const removeFile = removeFileCommand
+    ? (filepath) => executeCommand(removeFileCommand.replace('FILEPATH', filepath))
+    : defaultRemoveFile;
+
+    try {
+      await Promise.all(
+        oldImagePaths.map(imagePath => removeFile(imagePath))
+      );
+    } catch (error) {
+      console.error('Could remove old photos');
+      throw error;
+    }
+
 }
 
-const startTakingPhotos = ({ interval, maxPhotosToKeep, photoCommand, photosDirPath }) => {
+const startTakingPhotos = ({ interval, maxPhotosToKeep, photoCommand, photosDirPath, removeFileCommand }) => {
   const loop = async () => {
     await takeAPhoto({ photoCommand, photosDirPath });
-    await cleanUpOldPhotos({ maxPhotosToKeep, photosDirPath });
+    await cleanUpOldPhotos({ maxPhotosToKeep, photosDirPath, removeFileCommand });
   };
 
   setInterval(loop, interval);
