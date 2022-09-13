@@ -22,7 +22,7 @@ const executeCommand = (command) => new Promise((res, rej) => {
 });
 
 const takeAPhoto = async ({ photoCommand, photosDirPath }) => {
-  const [dateString] = new Date().toISOString()
+  const dateString = new Date().toISOString()
     .replace('T', '_')
     .replace(/\:/g, '-')
     .replace('.', '_')
