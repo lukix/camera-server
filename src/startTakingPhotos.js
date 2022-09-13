@@ -61,9 +61,8 @@ const startTakingPhotos = ({ interval, maxPhotosToKeep, photoCommand, photosDirP
   const loop = async () => {
     await takeAPhoto({ photoCommand, photosDirPath });
     await cleanUpOldPhotos({ maxPhotosToKeep, photosDirPath, removeFileCommand });
+    setTimeout(loop, interval);
   };
-
-  setInterval(loop, interval);
 }
 
 module.exports = startTakingPhotos;
