@@ -2,10 +2,11 @@ const express = require('express');
 
 const getAuthMiddleware = require('./getAuthMiddleware');
 const getNewestImageName = require('./getNewestImageName');
-const getHTML = require('./getHTML');
 const startTakingPhotos = require('./startTakingPhotos');
+const photoEventsManager = require('./photoEventsManager');
 const config = require('./config');
 
+const { triggerNewPhotoEvent, waitForNewPhoto } = photoEventsManager();
 const app = express();
 
 app.disable('x-powered-by');
@@ -16,11 +17,16 @@ app.use(getAuthMiddleware({
 }));
 
 app.use('/images', express.static(config.PHOTOS_DIR_PATH));
+app.use('/', express.static('public'));
 
-app.get('/', async (req, res) => {
-  const newestImageName = await getNewestImageName({ imagesDirName: config.PHOTOS_DIR_PATH });
-  const html = await getHTML({ imgPath: `/images/${newestImageName}` });
-  res.send(html);
+app.get('/latest-image', async (req, res) => {
+  const latestImageName = await getNewestImageName({ imagesDirName: config.PHOTOS_DIR_PATH });
+  res.redirect(`images/${latestImageName}`);
+});
+
+app.get('/pool-next-image-availability', async (req, res) => {
+  await waitForNewPhoto();
+  res.send(200);
 });
 
 app.listen(config.PORT, () => {
@@ -35,6 +41,7 @@ if (config.PHOTO_COMMAND) {
     photoCommand: config.PHOTO_COMMAND,
     removeFileCommand: config.REMOVE_FILE_COMMAND,
     photosDirPath: config.PHOTOS_DIR_PATH,
+    triggerNewPhotoEvent,
   });
 } else {
   console.log('"PHOTO_COMMAND" environment variable is not specified.');

@@ -57,10 +57,18 @@ const cleanUpOldPhotos = async ({ maxPhotosToKeep, photosDirPath, removeFileComm
 
 }
 
-const startTakingPhotos = ({ interval, maxPhotosToKeep, photoCommand, photosDirPath, removeFileCommand }) => {
+const startTakingPhotos = ({
+  interval,
+  maxPhotosToKeep,
+  photoCommand,
+  photosDirPath,
+  removeFileCommand,
+  triggerNewPhotoEvent,
+}) => {
   const loop = async () => {
     await takeAPhoto({ photoCommand, photosDirPath });
     await cleanUpOldPhotos({ maxPhotosToKeep, photosDirPath, removeFileCommand });
+    triggerNewPhotoEvent();
     setTimeout(loop, interval);
   };
   loop();
