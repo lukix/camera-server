@@ -26,7 +26,9 @@ app.get('/latest-image', async (req, res) => {
 
 app.get('/pool-next-image-availability', async (req, res) => {
   await waitForNewPhoto();
-  res.send(200);
+  const latestImageName = await getNewestImageName({ imagesDirName: config.PHOTOS_DIR_PATH });
+  const imageUrl = `images/${latestImageName}`;
+  res.send({ imageUrl });
 });
 
 app.listen(config.PORT, () => {
